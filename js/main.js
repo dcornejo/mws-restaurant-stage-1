@@ -2,7 +2,9 @@ let restaurants,
     neighborhoods,
     cuisines;
 let map;
-let markers = [];
+
+/* markers MUST be var */
+var markers = [];
 
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
@@ -138,10 +140,20 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
 createRestaurantHTML = (restaurant) => {
     const li = document.createElement('li');
 
+    // =======================================================================================
     const image = document.createElement('img');
     image.className = 'restaurant-img';
-    image.src = DBHelper.imageUrlForRestaurant(restaurant);
+
+    let src = DBHelper.imageUrlForRestaurant(restaurant);
+    let src_base = src.replace(/\.jpg$/, '');
+    let srcs = src_base + '-320.jpg 320w, ' + src_base + '-640.jpg 640w, ' + src_base + '.jpg 800w';
+
+    image.src = src;
+    image.srcset = srcs;
+    image.sizes = "(max-width: 800px) 100vw, 50vw";
+
     li.append(image);
+    // =======================================================================================
 
     const name = document.createElement('h1');
     name.innerHTML = restaurant.name;

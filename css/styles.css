@@ -14,9 +14,9 @@ body {
     /*position:relative;*/
 }
 
-@media screen and (min-width: 750px) {
+@media screen and (min-width: 800px) {
     body {
-        max-width: 750px;
+        max-width: 800px;
         margin: 0 auto 0 auto;
     }
 }
@@ -188,7 +188,7 @@ nav h1 a {
     padding: 15px;
 }
 
-@media screen and (min-width: 750px) {
+@media screen and (min-width: 800px) {
     #restaurants-list li {
         max-width: 45%;
     }
