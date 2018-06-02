@@ -51,9 +51,11 @@ fetchRestaurantFromURL = (callback) => {
 fillRestaurantHTML = (restaurant = self.restaurant) => {
     const name = document.getElementById('restaurant-name');
     name.innerHTML = restaurant.name;
+    name.tabIndex = 0;
 
     const address = document.getElementById('restaurant-address');
     address.innerHTML = restaurant.address;
+        address.tabIndex = 0;
 
     // =======================================================================================
     const image = document.getElementById('restaurant-img');
@@ -67,10 +69,18 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
     image.srcset = srcs;
     image.sizes = "(max-width: 800px) 100vw, 50vw";
 
+    /*
+     * not sure this is necessary - describing something they can't experience
+     * isn't helpful in this case. if i say "picture of a fluffy bunny, this has
+     * information they can use, but "picture of diners in candlelight" doesn't...
+     */
+    image.alt = DBHelper.imageDescriptionForRestaurant(restaurant);
+
     // =======================================================================================
 
     const cuisine = document.getElementById('restaurant-cuisine');
     cuisine.innerHTML = restaurant.cuisine_type;
+    cuisine.tabIndex = 0;
 
     // fill operating hours
     if (restaurant.operating_hours) {
@@ -85,6 +95,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
  */
 fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => {
     const hours = document.getElementById('restaurant-hours');
+    hours.tabIndex = 0;
     for (let key in operatingHours) {
         const row = document.createElement('tr');
 
@@ -107,6 +118,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     const container = document.getElementById('reviews-container');
     const title = document.createElement('h2');
     title.innerHTML = 'Reviews';
+    title.tabIndex = 0;
     container.appendChild(title);
 
     if (!reviews) {
@@ -127,6 +139,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
  */
 createReviewHTML = (review) => {
     const li = document.createElement('li');
+    li.tabIndex = 0;
     const name = document.createElement('p');
     name.innerHTML = review.name;
     li.appendChild(name);
