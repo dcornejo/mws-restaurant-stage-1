@@ -1,5 +1,5 @@
 
-var CACHE_STATIC_NAME = "static-v2";
+var CACHE_STATIC_NAME = "static-v3";
 var CACHE_DYNAMIC_NAME = "dynamic-v2";
 
 self.addEventListener('install', function (event) {
@@ -26,12 +26,21 @@ self.addEventListener('install', function (event) {
 });
 
 self.addEventListener('activate', function (event) {
-    console.log('activating ', event);
+    event.waitUntil(
+        caches.keys()
+            .then (function (keylist) {
+                return Promise.all(keylist.map (function (key) {
+                    if (key !== CACHE_STATIC_NAME && key !== CACHE_DYNAMIC_NAME) {
+                        return (caches.delete(key));
+                    }
+                }))
+            })
+    )
 });
 
 self.addEventListener('fetch', function (event) {
     event.respondWith(
-        caches.match(event.request)
+        caches.match(event.request, { ignoreSearch: true })
             .then(function(response) {
                 if (response) {
                     return response;
