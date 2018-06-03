@@ -6,6 +6,14 @@ let map;
 /* markers MUST be var */
 var markers = [];
 
+if ('serviceWorker' in navigator) {
+    console.log('registering');
+    navigator.serviceWorker.register('/sw.js')
+        .then(function () {
+            console.log('registered');
+        });
+}
+
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */

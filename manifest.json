@@ -1,0 +1,7 @@
+{
+  "name": "Restaurant Reviews",
+  "short_name": "Reviews",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "Standalone"
+}
