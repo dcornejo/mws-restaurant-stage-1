@@ -11,7 +11,6 @@ body, td, th, p {
 body {
     background-color: #fdfdfd;
     margin: 0;
-    /*position:relative;*/
 }
 
 @media screen and (min-width: 800px) {
@@ -127,7 +126,6 @@ nav h1 a {
     height: 400px;
     width: 100%;
     background-color: #ccc;
-    margin: 5px;
 }
 
 #map-container {
@@ -138,10 +136,8 @@ nav h1 a {
 
 .filter-options {
     width: 100%;
-    /*height: 50px;*/
     padding-top: 10px;
     padding-bottom: 10px;
-    /*background-color: #3397DB;*/
     background-color: #1377bb;
     align-items: center;
 
@@ -250,7 +246,6 @@ nav h1 a {
 }
 
 .inside #map-container {
-    /*background: blue none repeat scroll 0 0;*/
     min-height: 300px;
     width: 100%;
 }

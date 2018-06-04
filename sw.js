@@ -10,8 +10,8 @@
  * more diligent maintenance if the data source was not static
  */
 
-const STATIC_CACHE_NAME = "static-v4";
-const DYNAMIC_CACHE_NAME = "dynamic-v4";
+const STATIC_CACHE_NAME = "static-v7";
+const DYNAMIC_CACHE_NAME = "dynamic-v7";
 
 const STATIC_ASSETS = [
     '/',
@@ -86,13 +86,19 @@ self.addEventListener('fetch', function (event) {
                     /* we need to go to the network to fetch response */
                     return fetch(event.request)
                         .then (function (response) {
-                            /* we have received a response to the query, cache it */
-                            return caches.open(DYNAMIC_CACHE_NAME)
-                                .then(function(cache) {
-                                    cache.put(event.request.url, response.clone());
-                                    /* lastly, pass the response back */
-                                    return response;
-                                })
+                            if ((!event.request.url.match(/^https:\/\/maps.googleapis.com\//)) &&
+                                (!event.request.url.match(/^https:\/\/maps.gstatic.com\//))) {
+                                /* don't cache google maps content */
+                                return caches.open(DYNAMIC_CACHE_NAME)
+                                    .then(function(cache) {
+                                        cache.put(event.request.url, response.clone());
+                                        /* lastly, pass the response back */
+                                        return response;
+                                    })
+                            }
+                            else {
+                                return response;
+                            }
                         })
                         .catch(function (error) {
                             /* errors are normal when there's no net connection - shut it up */
