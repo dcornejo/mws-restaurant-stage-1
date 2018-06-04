@@ -131,7 +131,7 @@ nav h1 a {
 }
 
 #map-container {
-    width: calc(100% - 20px);
+    width: 100%;
 }
 
 /* ====================== Restaurant Filtering ====================== */

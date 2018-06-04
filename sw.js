@@ -10,8 +10,8 @@
  * more diligent maintenance if the data source was not static
  */
 
-const STATIC_CACHE_NAME = "static-v2";
-const DYNAMIC_CACHE_NAME = "dynamic-v2";
+const STATIC_CACHE_NAME = "static-v4";
+const DYNAMIC_CACHE_NAME = "dynamic-v4";
 
 const STATIC_ASSETS = [
     '/',
@@ -37,7 +37,7 @@ self.addEventListener('install', function (event) {
     event.waitUntil (
         caches.open(STATIC_CACHE_NAME)
             .then (function (cache) {
-                cache.addAll(STATIC_ASSETS);
+                return cache.addAll(STATIC_ASSETS);
             })
             .catch (function (error) {
                 console.log(error);
