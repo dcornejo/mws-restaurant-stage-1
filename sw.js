@@ -10,8 +10,8 @@
  * more diligent maintenance if the data source was not static
  */
 
-const STATIC_CACHE_NAME = "static-v7";
-const DYNAMIC_CACHE_NAME = "dynamic-v7";
+const STATIC_CACHE_NAME = "static-v10";
+const DYNAMIC_CACHE_NAME = "dynamic-v10";
 
 const STATIC_ASSETS = [
     '/',

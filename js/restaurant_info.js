@@ -123,6 +123,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     const title = document.createElement('h2');
     title.innerHTML = 'Reviews';
     title.tabIndex = 0;
+    title.setAttribute('role', 'heading');
     container.appendChild(title);
 
     if (!reviews) {
