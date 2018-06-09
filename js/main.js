@@ -90,6 +90,8 @@ window.initMap = () => {
         center: loc,
         scrollwheel: false
     });
+
+    /* hack to get a higher accessibility score */
     google.maps.event.addListenerOnce(self.map, 'idle', () => {
         document.getElementsByTagName('iframe')[0].title = "Google Maps";
     });
