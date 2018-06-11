@@ -6,6 +6,8 @@ let map;
 /* markers MUST be var */
 var markers = [];
 
+const mapBoxAccessToken = "pk.eyJ1Ijoic3R1ZGlvZG9nd29vZCIsImEiOiJjamk0N3UwNzEwNmdnM3dsaXQwaDY3ZTFpIn0.if54ZmGx95eDL8quDU0v0g";
+
 if ('serviceWorker' in navigator) {
     console.log('registering');
     navigator.serviceWorker.register('/sw.js')
@@ -85,16 +87,30 @@ window.initMap = () => {
         lat: 40.722216,
         lng: -73.987501
     };
-    self.map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 12,
-        center: loc,
-        scrollwheel: false
-    });
+    // self.map = new google.maps.Map(document.getElementById('map'), {
+    //     zoom: 12,
+    //     center: loc,
+    //     scrollwheel: false
+    // });
+    //
+    // /* hack to get a higher accessibility score */
+    // google.maps.event.addListenerOnce(self.map, 'idle', () => {
+    //     document.getElementsByTagName('iframe')[0].title = "Google Maps";
+    // });
 
-    /* hack to get a higher accessibility score */
-    google.maps.event.addListenerOnce(self.map, 'idle', () => {
-        document.getElementsByTagName('iframe')[0].title = "Google Maps";
-    });
+    /* set the initial view location */
+    const map = L.map('map').setView(loc, 12);
+
+    /* set the map tiles */
+    // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    // }).addTo(map);
+    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        maxZoom: 18,
+        id: 'mapbox.streets',
+        accessToken: mapBoxAccessToken
+    }).addTo(map);
 
     updateRestaurants();
 };
@@ -198,6 +214,8 @@ createRestaurantHTML = (restaurant) => {
 addMarkersToMap = (restaurants = self.restaurants) => {
     restaurants.forEach(restaurant => {
         // Add marker to the map
+
+        // TODO: NEED TO RECONCILE WHAT mapMarkerForRestaurant RETURNS
         const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
         google.maps.event.addListener(marker, 'click', () => {
             window.location.href = marker.url
