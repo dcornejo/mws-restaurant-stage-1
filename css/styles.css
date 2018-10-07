@@ -2,7 +2,7 @@
 /* CSS Document */
 
 body, td, th, p {
-    font-family: 'Nixie One', Arial, Helvetica, sans-serif;
+    font-family: 'Arvo', Arial, Helvetica, sans-serif;
     font-size: 10pt;
     color: #333;
     line-height: 1.5;
@@ -21,7 +21,7 @@ body {
 }
 
 ul, li {
-    font-family: 'Nixie One', Arial, Helvetica, sans-serif;
+    font-family: 'Arvo', Arial, Helvetica, sans-serif;
     font-size: 10pt;
     color: #333;
 }
@@ -41,7 +41,7 @@ a img {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Nixie One', Arial, Helvetica, sans-serif;
+    font-family: 'Arvo', Arial, Helvetica, sans-serif;
     margin: 0 0 20px;
 }
 
@@ -178,7 +178,7 @@ nav h1 a {
 #restaurants-list li {
     background-color: #fff;
     border: 2px solid #ccc;
-    font-family: 'Nixie One', Arial, sans-serif;
+    font-family: 'Arvo', Arial, sans-serif;
     min-height: 380px;
     text-align: left;
     width: 100%;
