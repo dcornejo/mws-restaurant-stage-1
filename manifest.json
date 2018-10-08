@@ -3,5 +3,19 @@
   "short_name": "Reviews",
   "start_url": "/index.html",
   "scope": "/",
-  "display": "Standalone"
+  "display": "Standalone",
+  "icons": [
+    {
+      "src": "/images/rr-icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/images/rr-icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "background_color": "#1377bb",
+  "theme_color": "#1377bb"
 }
