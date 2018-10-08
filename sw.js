@@ -10,8 +10,8 @@
  * more diligent maintenance if the data source was not static
  */
 
-const STATIC_CACHE_NAME = "static-v1";
-const DYNAMIC_CACHE_NAME = "dynamic-v1";
+const STATIC_CACHE_NAME = "static-v4";
+const DYNAMIC_CACHE_NAME = "dynamic-v4";
 
 const STATIC_ASSETS = [
     '/',
@@ -21,8 +21,7 @@ const STATIC_ASSETS = [
     '/js/main.js',
     '/js/restaurant_info.js',
     '/css/styles.css',
-    'https://fonts.googleapis.com/css?family=Nixie+One',
-    'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700'
+    'https://fonts.googleapis.com/css?family=Arvo',
 ];
 
 /**
@@ -60,6 +59,7 @@ self.addEventListener('activate', function (event) {
             .then (function (keylist) {
                 return Promise.all(keylist.map (function (key) {
                     if (key !== STATIC_CACHE_NAME && key !== DYNAMIC_CACHE_NAME) {
+                        // console.log("deleting caches");
                         return (caches.delete(key));
                     }
                 }))
@@ -80,15 +80,17 @@ self.addEventListener('fetch', function (event) {
             .then(function(response) {
                 if (response) {
                     /* response was cached already, return it */
+                    //console.log("served from cache :" + event.request.url);
                     return response;
                 }
                 else {
                     /* we need to go to the network to fetch response */
                     return fetch(event.request)
                         .then (function (response) {
-                            if ((!event.request.url.match(/^https:\/\/maps.googleapis.com\//)) &&
-                                (!event.request.url.match(/^https:\/\/maps.gstatic.com\//))) {
-                                /* don't cache google maps content */
+                            //console.log("fetching: " + event.request.url);
+                            if (!event.request.url.match(/^https:\/\/api.tiles.mapbox.com\//)) {
+                                /* don't cache maps content */
+                                // console.log("new cache: " + event.request.url);
                                 return caches.open(DYNAMIC_CACHE_NAME)
                                     .then(function(cache) {
                                         cache.put(event.request.url, response.clone());

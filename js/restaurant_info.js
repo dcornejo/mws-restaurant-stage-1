@@ -2,10 +2,19 @@ let restaurant;
 let map;
 var newMap;
 
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+        .then(function () {
+            // console.log('registered');
+        });
+}
+
 /**
  * Initialize map as soon as the page is loaded.
  */
 document.addEventListener('DOMContentLoaded', (event) => {
+    DBHelper.loadDatabase();
+
     initMap();
 });
 
@@ -87,11 +96,6 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
     image.srcset = srcs;
     image.sizes = "(max-width: 800px) 100vw, 50vw";
 
-    /*
-     * not sure this is necessary - describing something they can't experience
-     * isn't helpful in this case. if i say "picture of a fluffy bunny, this has
-     * information they can use, but "picture of diners in candlelight" doesn't...
-     */
     image.alt = DBHelper.imageDescriptionForRestaurant(restaurant);
 
     // =======================================================================================

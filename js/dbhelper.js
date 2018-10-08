@@ -1,54 +1,127 @@
+
+function openDatabase() {
+    if (!navigator.serviceWorker) {
+        return Promise.resolve();
+    }
+
+    // console.log('opening database');
+
+    return idb.open('restaurantsDb', 1, function (upgradeDb) {
+        switch(upgradeDb.oldVersion) {
+            case 0:
+                let store = upgradeDb.createObjectStore('restaurantStore', {
+                    keyPath: 'id'
+                });
+                store.createIndex('by-id', 'id');
+                store.createIndex('by-cuisine', 'cuisine_type');
+                store.createIndex('by-neighborhood', 'neighborhood');
+        }
+    })
+}
+
 /**
  * Common database helper functions.
  */
 class DBHelper {
-
     /**
      * Database URL.
      * Change this to restaurants.json file location on your server.
      */
     static get DATABASE_URL() {
-        const port = 8000; // Change this to your server port
-        return `/data/restaurants.json`;
+        /* really not sure i like this method, but it works... */
+        const origin = window.location.origin;
+        return origin + ':1337/restaurants';
     }
+
+    /**
+     * load Database from remote server
+     */
+    static loadDatabase() {
+        if (this.dbp) {
+            console.log("damn");
+        }
+
+        this.dbp = openDatabase();
+
+        this.dbp.then((db) => {
+            fetch(DBHelper.DATABASE_URL).then(response => {
+                 return response.json();
+            }).then(data => {
+
+                var tx = db.transaction('restaurantStore', 'readwrite');
+                var store = tx.objectStore('restaurantStore');
+
+                data.forEach(function (x) {
+                    store.put(x);
+                });
+
+            });
+        });
+        // console.log("loaded database");
+    }
+
+    /* ================================================================== */
+
+    /*
+     * it seems to me that there should be a way to fetch all the items
+     * for a specific key in an index. this is eluding me.
+     */
+
+    /**
+     * get an array of all the restaurants
+     *
+     * @returns {PromiseLike<T | never>}
+     */
+    static getRestaurants() {
+        return this.dbp.then(db => {
+            var tx = db.transaction('restaurantStore');
+            var store = tx.objectStore('restaurantStore');
+            return store.getAll();
+        }).then (function (val) {
+            return val;
+        });
+    }
+
+    /**
+     * get a specific restaurant by its ID
+     *
+     * @param id
+     * @returns {PromiseLike<T | never>}
+     */
+    static getRestaurant(id) {
+        if (!this.dbp) {
+            console.log("rats");
+        }
+        return this.dbp.then(db => {
+            var tx = db.transaction('restaurantStore');
+            var store = tx.objectStore('restaurantStore');
+
+            /* important to pass ID as integer! */
+            return store.get(parseInt(id));
+        }).then (function (val) {
+            return val;
+        });
+    }
+
+    /* ================================================================== */
 
     /**
      * Fetch all restaurants.
      */
     static fetchRestaurants(callback) {
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', DBHelper.DATABASE_URL);
-        xhr.onload = () => {
-            if (xhr.status === 200) { // Got a success response from server!
-                const json = JSON.parse(xhr.responseText);
-                const restaurants = json.restaurants;
-                callback(null, restaurants);
-            } else { // Oops!. Got an error from server.
-                const error = (`Request failed. Returned status of ${xhr.status}`);
-                callback(error, null);
-            }
-        };
-        xhr.send();
-    }
+        this.getRestaurants().then(data => {
+            callback(null, data);
+        });
+     }
 
     /**
      * Fetch a restaurant by its ID.
      */
     static fetchRestaurantById(id, callback) {
-        // fetch all restaurants with proper error handling.
-        DBHelper.fetchRestaurants((error, restaurants) => {
-            if (error) {
-                callback(error, null);
-            } else {
-                const restaurant = restaurants.find(r => r.id == id);
-                if (restaurant) { // Got the restaurant
-                    callback(null, restaurant);
-                } else { // Restaurant does not exist in the database
-                    callback('Restaurant does not exist', null);
-                }
-            }
+        this.getRestaurant(id).then(data => {
+            callback(null, data);
         });
-    }
+     }
 
     /**
      * Fetch restaurants by a cuisine type with proper error handling.
@@ -150,14 +223,14 @@ class DBHelper {
      * Restaurant image URL.
      */
     static imageUrlForRestaurant(restaurant) {
-        return (`/img/${restaurant.photograph}`);
+        return (`/img/${restaurant.id}.jpg`);
     }
 
     /**
      * Restaurant image description URL.
      */
     static imageDescriptionForRestaurant(restaurant) {
-        return (restaurant.photograph_descr);
+        return ('Photograph of ' + restaurant.name);
     }
 
     /**
@@ -170,20 +243,9 @@ class DBHelper {
                 title: restaurant.name,
                 alt: restaurant.name,
                 url: DBHelper.urlForRestaurant(restaurant)
-            })
+            });
         marker.addTo(newMap);
         return marker;
     }
-
-    /* static mapMarkerForRestaurant(restaurant, map) {
-      const marker = new google.maps.Marker({
-        position: restaurant.latlng,
-        title: restaurant.name,
-        url: DBHelper.urlForRestaurant(restaurant),
-        map: map,
-        animation: google.maps.Animation.DROP}
-      );
-      return marker;
-    } */
 }
 
