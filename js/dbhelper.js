@@ -4,8 +4,6 @@ function openDatabase() {
         return Promise.resolve();
     }
 
-    // console.log('opening database');
-
     return idb.open('restaurantsDb', 1, function (upgradeDb) {
         switch(upgradeDb.oldVersion) {
             case 0:
@@ -30,7 +28,8 @@ class DBHelper {
     static get DATABASE_URL() {
         /* really not sure i like this method, but it works... */
         const origin = window.location.origin;
-        return origin + ':1337/restaurants';
+        let dataUrl = origin.replace(/:[0-9]+$/, '') + ':1337/restaurants';
+        return dataUrl;
     }
 
     /**
@@ -41,31 +40,32 @@ class DBHelper {
             console.log("damn");
         }
 
+        console.log("opening db");
         this.dbp = openDatabase();
+        console.log("db opened");
 
-        this.dbp.then((db) => {
-            fetch(DBHelper.DATABASE_URL).then(response => {
-                 return response.json();
+        return this.dbp.then((db) => {
+            return fetch(DBHelper.DATABASE_URL).then(response => {
+                return response.json();
             }).then(data => {
 
                 var tx = db.transaction('restaurantStore', 'readwrite');
                 var store = tx.objectStore('restaurantStore');
 
+                let promises = [];
+
                 data.forEach(function (x) {
-                    store.put(x);
+                    console.log("put", x);
+                    promises.push(store.put(x));
                 });
 
+                console.log("puts queued");
+                return Promise.all(promises);
             });
         });
-        // console.log("loaded database");
-    }
+     }
 
     /* ================================================================== */
-
-    /*
-     * it seems to me that there should be a way to fetch all the items
-     * for a specific key in an index. this is eluding me.
-     */
 
     /**
      * get an array of all the restaurants
@@ -89,6 +89,7 @@ class DBHelper {
      * @returns {PromiseLike<T | never>}
      */
     static getRestaurant(id) {
+        console.log("getRestaurant()");
         if (!this.dbp) {
             console.log("rats");
         }
@@ -110,6 +111,7 @@ class DBHelper {
      */
     static fetchRestaurants(callback) {
         this.getRestaurants().then(data => {
+            console.log("fetchRestaurants()", data);
             callback(null, data);
         });
      }
@@ -119,6 +121,7 @@ class DBHelper {
      */
     static fetchRestaurantById(id, callback) {
         this.getRestaurant(id).then(data => {
+            console.log("fetchRestaurantById()", data);
             callback(null, data);
         });
      }
@@ -145,6 +148,7 @@ class DBHelper {
     static fetchRestaurantByNeighborhood(neighborhood, callback) {
         // Fetch all restaurants
         DBHelper.fetchRestaurants((error, restaurants) => {
+            console.log("burg", restaurants);
             if (error) {
                 callback(error, null);
             } else {

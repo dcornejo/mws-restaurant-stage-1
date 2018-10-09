@@ -13,9 +13,9 @@ if ('serviceWorker' in navigator) {
  * Initialize map as soon as the page is loaded.
  */
 document.addEventListener('DOMContentLoaded', (event) => {
-    DBHelper.loadDatabase();
-
-    initMap();
+    DBHelper.loadDatabase().then(() => {
+        initMap();
+    });
 });
 
 /**

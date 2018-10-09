@@ -19,10 +19,19 @@ if ('serviceWorker' in navigator) {
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
 document.addEventListener('DOMContentLoaded', (event) => {
-    DBHelper.loadDatabase();
-    initMap(); // added
-    fetchNeighborhoods();
-    fetchCuisines();
+    let prom = DBHelper.loadDatabase();
+    console.log("prom", prom);
+
+    prom.then(() => {
+        console.log("data needs to be valid here.");
+
+        console.log("fetchNeighborhoods");
+        fetchNeighborhoods();
+        console.log("fetchCuisines");
+        fetchCuisines();
+        console.log("init map");
+        initMap();
+    });
 });
 
 /**
@@ -30,9 +39,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
  */
 fetchNeighborhoods = () => {
     DBHelper.fetchNeighborhoods((error, neighborhoods) => {
-        if (error) { // Got an error
+        if (error) {
+            // Got an error
             console.error(error);
         } else {
+            console.log("neighborhoods", neighborhoods);
             self.neighborhoods = neighborhoods;
             fillNeighborhoodsHTML();
         }
@@ -84,11 +95,14 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
  * Initialize leaflet map, called from HTML.
  */
 initMap = () => {
+    console.log("1");
     self.newMap = L.map('map', {
         center: [40.722216, -73.987501],
         zoom: 12,
         scrollWheelZoom: false
     });
+
+    console.log(2);
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={mapboxToken}', {
         mapboxToken: 'pk.eyJ1Ijoic3R1ZGlvZG9nd29vZCIsImEiOiJjamk0N3UwNzEwNmdnM3dsaXQwaDY3ZTFpIn0.if54ZmGx95eDL8quDU0v0g',
         maxZoom: 18,
@@ -98,6 +112,7 @@ initMap = () => {
         id: 'mapbox.streets'
     }).addTo(newMap);
 
+    console.log(3);
     updateRestaurants();
 };
 
