@@ -40,9 +40,7 @@ class DBHelper {
             console.log("damn");
         }
 
-        console.log("opening db");
         this.dbp = openDatabase();
-        console.log("db opened");
 
         return this.dbp.then((db) => {
             return fetch(DBHelper.DATABASE_URL).then(response => {
@@ -55,11 +53,9 @@ class DBHelper {
                 let promises = [];
 
                 data.forEach(function (x) {
-                    console.log("put", x);
                     promises.push(store.put(x));
                 });
 
-                console.log("puts queued");
                 return Promise.all(promises);
             });
         });
@@ -89,9 +85,8 @@ class DBHelper {
      * @returns {PromiseLike<T | never>}
      */
     static getRestaurant(id) {
-        console.log("getRestaurant()");
         if (!this.dbp) {
-            console.log("rats");
+            console.log("rats, this shouldn't happen");
         }
         return this.dbp.then(db => {
             var tx = db.transaction('restaurantStore');
@@ -111,7 +106,6 @@ class DBHelper {
      */
     static fetchRestaurants(callback) {
         this.getRestaurants().then(data => {
-            console.log("fetchRestaurants()", data);
             callback(null, data);
         });
      }
@@ -121,7 +115,6 @@ class DBHelper {
      */
     static fetchRestaurantById(id, callback) {
         this.getRestaurant(id).then(data => {
-            console.log("fetchRestaurantById()", data);
             callback(null, data);
         });
      }
@@ -148,7 +141,6 @@ class DBHelper {
     static fetchRestaurantByNeighborhood(neighborhood, callback) {
         // Fetch all restaurants
         DBHelper.fetchRestaurants((error, restaurants) => {
-            console.log("burg", restaurants);
             if (error) {
                 callback(error, null);
             } else {
