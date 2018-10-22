@@ -87,10 +87,10 @@ self.addEventListener('fetch', function (event) {
                     /* we need to go to the network to fetch response */
                     return fetch(event.request)
                         .then (function (response) {
-                            //console.log("fetching: " + event.request.url);
-                            if (!event.request.url.match(/^https:\/\/api.tiles.mapbox.com\//)) {
-                                /* don't cache maps content */
-                                // console.log("new cache: " + event.request.url);
+                            /* TODO: make this test more generic, at least for review content */
+                            if ((!event.request.url.match(/^https:\/\/api.tiles.mapbox.com\//)) &&
+                                (!event.request.url.match(/^https:\/\/testweb.dogwood.com:1337\//))) {
+                                /* don't cache maps or reviews content */
                                 return caches.open(DYNAMIC_CACHE_NAME)
                                     .then(function(cache) {
                                         cache.put(event.request.url, response.clone());

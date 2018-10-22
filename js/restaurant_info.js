@@ -1,5 +1,5 @@
 let restaurant;
-let map;
+//let map;
 var newMap;
 
 if ('serviceWorker' in navigator) {
@@ -54,7 +54,8 @@ fetchRestaurantFromURL = (callback) => {
         return;
     }
     const id = getParameterByName('id');
-    if (!id) { // no id found in URL
+    if (!id) {
+        // no id found in URL
         error = 'No restaurant id in URL';
         callback(error, null);
     }
@@ -65,8 +66,26 @@ fetchRestaurantFromURL = (callback) => {
                 console.error(error);
                 return;
             }
-            fillRestaurantHTML();
-            callback(null, restaurant)
+
+            /* ====================================== */
+
+            /* TODO: separate the review logic so that we can dynamically update it */
+
+            let reviewsUrl = window.location.origin.replace(/:[0-9]+$/, '') + ':1337/reviews/?restaurant_id=' + id;
+            console.log("reviewsUrl: ", reviewsUrl);
+
+            fetch(reviewsUrl).then(response => {
+                // console.log(response);
+                return response.json();
+            }).then(reviews => {
+                console.log("reviews ", reviews);
+
+                restaurant.reviews = reviews;
+                fillRestaurantHTML();
+                callback(null, restaurant)
+            });
+
+            /* ====================================== */
         });
     }
 };
@@ -171,7 +190,8 @@ createReviewHTML = (review) => {
     li.appendChild(name);
 
     const date = document.createElement('p');
-    date.innerHTML = review.date;
+    const updatedAt = new Date(review.updatedAt);
+    date.innerHTML = updatedAt.toLocaleDateString();
     li.appendChild(date);
 
     const rating = document.createElement('p');
