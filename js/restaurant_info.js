@@ -89,8 +89,8 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
     image.className = 'restaurant-img';
 
     let src = DBHelper.imageUrlForRestaurant(restaurant);
-    let src_base = src.replace(/\.jpg$/, '');
-    let srcs = src_base + '-320.jpg 320w, ' + src_base + '-640.jpg 640w, ' + src_base + '.jpg 800w';
+    let src_base = src.replace(/\.webp$/, '');
+    let srcs = src_base + '-320.webp 320w, ' + src_base + '-640.webp 640w, ' + src_base + '.webp 800w';
 
     image.src = src;
     image.srcset = srcs;
