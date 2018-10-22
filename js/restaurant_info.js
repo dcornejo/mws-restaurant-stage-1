@@ -43,7 +43,7 @@ initMap = () => {
             DBHelper.mapMarkerForRestaurant(self.restaurant, self.newMap);
         }
     });
-}
+};
 
 /**
  * Get current restaurant from page URL.
@@ -57,7 +57,8 @@ fetchRestaurantFromURL = (callback) => {
     if (!id) { // no id found in URL
         error = 'No restaurant id in URL';
         callback(error, null);
-    } else {
+    }
+    else {
         DBHelper.fetchRestaurantById(id, (error, restaurant) => {
             self.restaurant = restaurant;
             if (!restaurant) {
@@ -190,7 +191,7 @@ createReviewHTML = (review) => {
 fillBreadcrumb = (restaurant = self.restaurant) => {
     const breadcrumb = document.getElementById('breadcrumb');
     const li = document.createElement('li');
-    li.innerHTML = restaurant.name;
+    li.innerHTML = '<a href="" aria-current="page">' + restaurant.name + '</a>';
     breadcrumb.appendChild(li);
 };
 
