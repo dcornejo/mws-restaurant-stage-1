@@ -242,9 +242,11 @@ nav h1 a {
     width: calc(100% - 80px);
 }
 
+/*
 .inside #restaurant-container {
-    /*padding: 0 5px 0 5px;*/
+    padding: 0 5px 0 5px;
 }
+*/
 
 .inside #map-container {
     min-height: 300px;
@@ -257,12 +259,13 @@ nav h1 a {
     width: calc(100% - 10px);
 }
 
+/*
 .inside #footer {
     width: 100%;
 }
+*/
 
 #restaurant-name {
-    /*color: #f18200;*/
     color: #c15200;
     font-family: Arial, sans-serif;
     font-size: 20pt;
