@@ -155,7 +155,7 @@ nav h1 a {
 .filter-options select {
     background-color: white;
     border: 1px solid #fff;
-    font-family: Arial, sans-serif;
+    font-family: 'Arvo', Arial, Helvetica, sans-serif;
     font-size: 11pt;
     height: 48px;
     letter-spacing: 0;
@@ -178,7 +178,7 @@ nav h1 a {
 #restaurants-list li {
     background-color: #fff;
     border: 2px solid #ccc;
-    font-family: 'Arvo', Arial, sans-serif;
+    font-family: 'Arvo', Arial, Helvetica, sans-serif;
     min-height: 380px;
     text-align: left;
     width: 100%;
@@ -203,7 +203,7 @@ nav h1 a {
 
 #restaurants-list li h1 {
     color: #c15200;
-    font-family: Arial, sans-serif;
+    font-family: 'Arvo', Arial, Helvetica, sans-serif;
     font-size: 14pt;
     font-weight: 200;
     letter-spacing: 0;
@@ -267,7 +267,7 @@ nav h1 a {
 
 #restaurant-name {
     color: #c15200;
-    font-family: Arial, sans-serif;
+    font-family: 'Arvo', Arial, Helvetica, sans-serif;
     font-size: 20pt;
     font-weight: 200;
     letter-spacing: 0;
@@ -344,6 +344,18 @@ nav h1 a {
 
 #reviews-list li p {
     margin: 0 0 10px;
+}
+
+.favorite {
+    font-size: 1.5em;
+    color: red;
+    margin-left: 5px;
+}
+
+.not_favorite {
+    font-size: 1.5em;
+    color: green;
+    margin-left: 5px;
 }
 
 /* adjustments */

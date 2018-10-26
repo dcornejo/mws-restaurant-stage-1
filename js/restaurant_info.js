@@ -70,6 +70,7 @@ fetchRestaurantFromURL = (callback) => {
             /* ====================================== */
 
             /* TODO: separate the review logic so that we can dynamically update it */
+            /* TODO: check if this restaurant is a favorite */
 
             let reviewsUrl = window.location.origin.replace(/:[0-9]+$/, '') + ':1337/reviews/?restaurant_id=' + id;
             console.log("reviewsUrl: ", reviewsUrl);
@@ -105,6 +106,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
 
     // =======================================================================================
+
     const image = document.getElementById('restaurant-img');
     image.className = 'restaurant-img';
 

@@ -156,6 +156,55 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
 };
 
 /**
+ * handle clicking on the favorite icon
+ *
+ * @param id
+ */
+
+favoriteClick = (id) => {
+
+    /* TODO: update IDB too? */
+
+    /* find the element that was clicked on */
+    const elt = document.getElementById('favorite-' + id);
+
+    /* get the index of the restaurant */
+    let re = id - 1;
+
+    /* what is the current state? */
+    let current = self.restaurants[re].is_favorite;
+
+    const origin = window.location.origin;
+    let dataUrl = origin.replace(/:[0-9]+$/, '') + ':1337/restaurants/' + id + '/?is_favorite=';
+
+    if (current === 'true') {
+        /* unliked */
+        elt.setAttribute('aria-checked', 'false');
+        elt.setAttribute('class', 'not_favorite');
+        self.restaurants[id - 1].is_favorite = 'false';
+
+        dataUrl = dataUrl + 'false';
+        fetch(dataUrl, {
+            method: 'POST'
+        }).then(response => response.json())
+            .then(data => console.log(data.name + ' unliked'));
+
+    }
+    else {
+        /* liked */
+        elt.setAttribute('aria-checked', 'true');
+        elt.setAttribute('class', 'favorite');
+        self.restaurants[id - 1].is_favorite = 'true';
+
+        dataUrl = dataUrl + 'true';
+        fetch(dataUrl, {
+            method: 'POST'
+        }).then(response => response.json())
+            .then(data => console.log(data.name + ' liked'));
+    }
+};
+
+/**
  * Create restaurant HTML.
  */
 createRestaurantHTML = (restaurant) => {
@@ -163,6 +212,7 @@ createRestaurantHTML = (restaurant) => {
     li.tabIndex = 0;
 
     // =======================================================================================
+
     const image = document.createElement('img');
     image.className = 'restaurant-img';
 
@@ -176,12 +226,37 @@ createRestaurantHTML = (restaurant) => {
     image.alt = DBHelper.imageDescriptionForRestaurant(restaurant);
 
     li.append(image);
+
     // =======================================================================================
 
     const name = document.createElement('h1');
+
+    let spanFave = document.createElement('span');
+    spanFave.setAttribute('tabindex', '0');
+    spanFave.setAttribute('role', 'switch');
+    spanFave.setAttribute('onclick', 'favoriteClick(' + restaurant.id + ');');
+    spanFave.setAttribute('id', 'favorite-' + restaurant.id);
+
+    spanFave.innerHTML = '&#9829';
+    // console.log(restaurant);
+
+    if (restaurant.is_favorite === "true") {
+        spanFave.setAttribute('class', 'favorite');
+        spanFave.setAttribute('aria-checked', 'true');
+    }
+    else {
+        spanFave.setAttribute('class', 'not_favorite');
+        spanFave.setAttribute('aria-checked', 'false');
+    }
+
     name.innerHTML = restaurant.name;
     name.setAttribute('role', 'heading');
+
+    name.appendChild(spanFave);
+
     li.append(name);
+
+    // =======================================================================================
 
     const neighborhood = document.createElement('p');
     neighborhood.innerHTML = restaurant.neighborhood;
