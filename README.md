@@ -1,5 +1,9 @@
-# Mobile Web Specialist Certification Course
----
+
+# Mobile Web Specialist Course
+
+_Every byte is sacred, every byte is great, is a byte is wasted, 
+God get's quite irate_
+
 #### _Three Stage Course Material Project - Restaurant Reviews_
 
 ## Project Overview: Stage 2

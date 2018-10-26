@@ -236,7 +236,6 @@ createRestaurantHTML = (restaurant) => {
     spanFave.setAttribute('id', 'favorite-' + restaurant.id);
 
     spanFave.innerHTML = '&#9829';
-    // console.log(restaurant);
 
     if (restaurant.is_favorite === "true") {
         spanFave.setAttribute('class', 'favorite');

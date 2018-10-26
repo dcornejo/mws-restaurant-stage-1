@@ -73,13 +73,13 @@ fetchRestaurantFromURL = (callback) => {
             /* TODO: check if this restaurant is a favorite */
 
             let reviewsUrl = window.location.origin.replace(/:[0-9]+$/, '') + ':1337/reviews/?restaurant_id=' + id;
-            console.log("reviewsUrl: ", reviewsUrl);
+            // console.log("reviewsUrl: ", reviewsUrl);
 
             fetch(reviewsUrl).then(response => {
                 // console.log(response);
                 return response.json();
             }).then(reviews => {
-                console.log("reviews ", reviews);
+                // console.log("reviews ", reviews);
 
                 restaurant.reviews = reviews;
                 fillRestaurantHTML();
@@ -211,9 +211,30 @@ createReviewHTML = (review) => {
  * Add restaurant name to the breadcrumb navigation menu
  */
 fillBreadcrumb = (restaurant = self.restaurant) => {
+    console.log("bc: ", self.restaurant);
     const breadcrumb = document.getElementById('breadcrumb');
     const li = document.createElement('li');
+
     li.innerHTML = '<a href="" aria-current="page">' + restaurant.name + '</a>';
+
+    let spanFave = document.createElement('span');
+    spanFave.setAttribute('tabindex', '0');
+    spanFave.setAttribute('role', 'switch');
+    spanFave.setAttribute('onclick', 'favoriteClick(' + restaurant.id + ');');
+    spanFave.setAttribute('id', 'favorite-' + restaurant.id);
+    spanFave.innerHTML = '&#9829';
+
+    if (self.restaurant.is_favorite === "true") {
+        spanFave.setAttribute('class', 'favorite');
+        spanFave.setAttribute('aria-checked', 'true');
+    }
+    else {
+        spanFave.setAttribute('class', 'not_favorite');
+        spanFave.setAttribute('aria-checked', 'false');
+    }
+
+    li.appendChild(spanFave);
+
     breadcrumb.appendChild(li);
 };
 
@@ -232,3 +253,53 @@ getParameterByName = (name, url) => {
         return '';
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
 };
+
+/**
+ * handle clicking on the favorite icon
+ *
+ * @param id
+ */
+
+favoriteClick = (id) => {
+
+    /* TODO: find a decent way to display favorite icon */
+
+    /* find the element that was clicked on */
+    const elt = document.getElementById('favorite-' + id);
+
+    console.log("click", self.restaurant);
+
+    /* get the index of the restaurant */
+    let re = id - 1;
+
+    /* what is the current state? */
+    let current = self.restaurant.is_favorite;
+
+    const origin = window.location.origin;
+    let dataUrl = origin.replace(/:[0-9]+$/, '') + ':1337/restaurants/' + id + '/?is_favorite=';
+
+    if (current === 'true') {
+        /* unliked */
+        elt.setAttribute('aria-checked', 'false');
+        elt.setAttribute('class', 'not_favorite');
+        self.restaurant.is_favorite = 'false';
+
+        dataUrl = dataUrl + 'false';
+    }
+    else {
+        /* liked */
+        elt.setAttribute('aria-checked', 'true');
+        elt.setAttribute('class', 'favorite');
+        self.restaurant.is_favorite = 'true';
+
+        dataUrl = dataUrl + 'true';
+    }
+
+    fetch(dataUrl, {
+        method: 'POST'
+    }).then(response => response.json());
+
+    /* lastly, tell IDB what happened */
+    return DBHelper.updateRestaurant(self.restaurant);
+};
+
