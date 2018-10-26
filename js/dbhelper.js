@@ -59,7 +59,7 @@ class DBHelper {
                 return Promise.all(promises);
             });
         });
-     }
+    }
 
     /* ================================================================== */
 
@@ -73,7 +73,7 @@ class DBHelper {
             var tx = db.transaction('restaurantStore');
             var store = tx.objectStore('restaurantStore');
             return store.getAll();
-        }).then (function (val) {
+        }).then(function (val) {
             return val;
         });
     }
@@ -94,7 +94,7 @@ class DBHelper {
 
             /* important to pass ID as integer! */
             return store.get(parseInt(id));
-        }).then (function (val) {
+        }).then(function (val) {
             return val;
         });
     }
@@ -108,7 +108,7 @@ class DBHelper {
         this.getRestaurants().then(data => {
             callback(null, data);
         });
-     }
+    }
 
     /**
      * Fetch a restaurant by its ID.
@@ -117,7 +117,7 @@ class DBHelper {
         this.getRestaurant(id).then(data => {
             callback(null, data);
         });
-     }
+    }
 
     /**
      * Fetch restaurants by a cuisine type with proper error handling.
@@ -242,6 +242,19 @@ class DBHelper {
             });
         marker.addTo(newMap);
         return marker;
+    }
+
+    /* ============================================== */
+
+    static updateRestaurant(x) {
+        /* given a restaurant structure, update IDB with it */
+        /* note that the ID we need is already in the structure */
+
+        return this.dbp.then((db) => {
+            const tx = db.transaction('restaurantStore', 'readwrite');
+            const store = tx.objectStore('restaurantStore');
+            return store.put(x);
+        });
     }
 }
 

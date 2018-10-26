@@ -163,7 +163,7 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
 
 favoriteClick = (id) => {
 
-    /* TODO: update IDB too? */
+    /* TODO: find a decent way to display favorite icon */
 
     /* find the element that was clicked on */
     const elt = document.getElementById('favorite-' + id);
@@ -184,11 +184,6 @@ favoriteClick = (id) => {
         self.restaurants[id - 1].is_favorite = 'false';
 
         dataUrl = dataUrl + 'false';
-        fetch(dataUrl, {
-            method: 'POST'
-        }).then(response => response.json())
-            .then(data => console.log(data.name + ' unliked'));
-
     }
     else {
         /* liked */
@@ -197,11 +192,14 @@ favoriteClick = (id) => {
         self.restaurants[id - 1].is_favorite = 'true';
 
         dataUrl = dataUrl + 'true';
-        fetch(dataUrl, {
-            method: 'POST'
-        }).then(response => response.json())
-            .then(data => console.log(data.name + ' liked'));
     }
+
+    fetch(dataUrl, {
+        method: 'POST'
+    }).then(response => response.json());
+
+    /* lastly, tell IDB what happened */
+    return DBHelper.updateRestaurant(self.restaurants[id - 1]);
 };
 
 /**
