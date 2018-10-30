@@ -49,10 +49,11 @@ initMap = () => {
  * Get current restaurant from page URL.
  */
 fetchRestaurantFromURL = (callback) => {
-    if (self.restaurant) { // restaurant already fetched!
-        callback(null, self.restaurant);
-        return;
-    }
+    // if (self.restaurant) {
+    //     // restaurant already fetched!
+    //     callback(null, self.restaurant);
+    //     return;
+    // }
     const id = getParameterByName('id');
     if (!id) {
         // no id found in URL
@@ -69,18 +70,12 @@ fetchRestaurantFromURL = (callback) => {
 
             /* ====================================== */
 
-            /* TODO: separate the review logic so that we can dynamically update it */
-            /* TODO: check if this restaurant is a favorite */
-
-            let reviewsUrl = window.location.origin.replace(/:[0-9]+$/, '') + ':1337/reviews/?restaurant_id=' + id;
-            // console.log("reviewsUrl: ", reviewsUrl);
+            let reviewsUrl = DBHelper.DATABASE_URL_ROOT + 'reviews/?restaurant_id=' + id;
 
             fetch(reviewsUrl).then(response => {
                 // console.log(response);
                 return response.json();
             }).then(reviews => {
-                // console.log("reviews ", reviews);
-
                 restaurant.reviews = reviews;
                 fillRestaurantHTML();
                 callback(null, restaurant)
@@ -211,7 +206,6 @@ createReviewHTML = (review) => {
  * Add restaurant name to the breadcrumb navigation menu
  */
 fillBreadcrumb = (restaurant = self.restaurant) => {
-    console.log("bc: ", self.restaurant);
     const breadcrumb = document.getElementById('breadcrumb');
     const li = document.createElement('li');
 
@@ -275,8 +269,7 @@ favoriteClick = (id) => {
     /* what is the current state? */
     let current = self.restaurant.is_favorite;
 
-    const origin = window.location.origin;
-    let dataUrl = origin.replace(/:[0-9]+$/, '') + ':1337/restaurants/' + id + '/?is_favorite=';
+    let dataUrl = DBHelper.DATABASE_URL_ROOT + 'restaurants/' + id + '/?is_favorite=';
 
     if (current === 'true') {
         /* unliked */
@@ -303,3 +296,30 @@ favoriteClick = (id) => {
     return DBHelper.updateRestaurant(self.restaurant);
 };
 
+reviewSubmit = () => {
+    let xxx = document.getElementById('review-form').elements;
+
+    const review = {
+        restaurant_id: this.restaurant.id,
+        name: xxx['reviewer-name'].value,
+        rating: xxx['reviewer-rating'].value,
+        comments: xxx['reviewer-comment'].value
+    };
+
+    console.log("review ", review);
+    let dataUrl = origin.replace(/:[0-9]+$/, '') + ':1337/reviews/';
+    console.log("url ", dataUrl);
+
+    /* send the review to the server */
+    fetch(dataUrl, {
+        method: "POST",
+        cache: "no-cache",
+        headers: {
+            "Content-Type": "application/json; charset=utf-8"
+        },
+        body: JSON.stringify(review)
+    }).then(response => response.json())
+        .then(d => console.log(d));
+
+    return false;
+};

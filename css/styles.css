@@ -307,7 +307,7 @@ nav h1 a {
     width: 100%;
 }
 
-#restaurant-container, #reviews-container {
+#restaurant-container, #reviews-container, #new-review {
     width: 100%;
 }
 
@@ -316,12 +316,13 @@ nav h1 a {
 }
 
 #reviews-container h2 {
-    /*color: #f58500;*/
     color: #c15200;
     font-size: 24pt;
     font-weight: 300;
     letter-spacing: -1px;
     padding-bottom: 1pt;
+    padding-top: 5px;
+    text-align: center;
 }
 
 #reviews-list {
@@ -356,7 +357,73 @@ nav h1 a {
     font-size: 1.5em;
     color: green;
     margin-left: 5px;
+    margin-top: 20px
 }
+
+/* ============================== */
+
+#new-review {
+    padding: 20px;
+    max-width: 100%;
+    font-size: 1.25em;
+}
+
+#review-form {
+    max-width: 100%;
+}
+
+#review-form label {
+    float: right;
+    padding-right: 20px;
+}
+
+#review-form input[type="text"] {
+    width: 95%;
+    height: 48px;
+    font-size: 1em;
+}
+
+#review-form textarea {
+    width: 95%;
+    height: 15em;
+    font-size: 1em;
+}
+
+#review-form select {
+    width: 96px;
+    height: 48px;
+    align-content: center;
+    font-size: 1em;
+}
+
+#new-review {
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.col-20 {
+    float: left;
+    width: 20%;
+    margin-top: 6px;
+}
+
+.col-80 {
+    float: left;
+    width: 80%;
+    margin-top: 6px;
+}
+
+.row {
+    padding-bottom: 10px;
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* ============================== */
 
 /* adjustments */
 @media screen and (min-width: 700px) {
@@ -367,6 +434,9 @@ nav h1 a {
         width: 50%;
     }
     #reviews-container {
+    }
+    #new-review {
+
     }
     #reviews-list li {
         width: calc(50% - 22px);

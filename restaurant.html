@@ -11,7 +11,7 @@
 
         <link rel="stylesheet" href="css/styles.css">
         <link rel="stylesheet" href="css/leaflet.css"/>
-        <link href="https://fonts.googleapis.com/css?family=Arvo" rel="stylesheet">
+        <!--<link href="https://fonts.googleapis.com/css?family=Arvo" rel="stylesheet">-->
 
         <!-- fix contrast problem in leaflet -->
         <style>
@@ -41,10 +41,52 @@
                 <table id="restaurant-hours"></table>
             </div>
             <div id="map-container">
-                <div id="map" tabindex="-1" aria-label="Google Map" role="application"></div>
+                <div id="map" tabindex="-1" aria-label="Map" role="application"></div>
             </div>
             <div id="reviews-container">
                 <ul id="reviews-list"></ul>
+            </div>
+            <div id="new-review">
+                <form id="review-form" onsubmit="return reviewSubmit();">
+
+                    <div class="row">
+                        <div class="col-20">
+                            <label for="reviewer-name">Name:</label>
+                        </div>
+                        <div class="col-80">
+                            <input id="reviewer-name" aria-label="name" type="text" name="reviewer">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-20">
+                            <label for="reviewer-rating">Rating</label>
+                        </div>
+                        <div class="col-80">
+                            <select id="reviewer-rating">
+                                <option value="1">1</option>>
+                                <option value="2">2</option>
+                                <option value="3" selected>3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-20">
+                            <label for="reviewer-comment">Comment:</label>
+                        </div>
+                        <div class="col-80">
+                            <textarea id="reviewer-comment" aria-label="review" rows="8"></textarea><br/>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <input aria-label="submit" type="submit" name="submit"><br/>
+                    </div>
+
+                </form>
             </div>
         </main>
         <footer id="footer">

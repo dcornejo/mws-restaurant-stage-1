@@ -10,9 +10,9 @@ function openDatabase() {
                 let store = upgradeDb.createObjectStore('restaurantStore', {
                     keyPath: 'id'
                 });
-                store.createIndex('by-id', 'id');
-                store.createIndex('by-cuisine', 'cuisine_type');
-                store.createIndex('by-neighborhood', 'neighborhood');
+                // store.createIndex('by-id', 'id');
+                // store.createIndex('by-cuisine', 'cuisine_type');ww
+                // store.createIndex('by-neighborhood', 'neighborhood');
         }
     })
 }
@@ -23,8 +23,13 @@ function openDatabase() {
 class DBHelper {
     /**
      * Database URL.
-     * Change this to restaurants.json file location on your server.
      */
+    static get DATABASE_URL_ROOT() {
+        const origin = window.location.origin;
+        let dataUrl = origin.replace(/:[0-9]+$/, '') + ':1337/';
+        return dataUrl;
+    }
+
     static get DATABASE_URL() {
         /* really not sure i like this method, but it works... */
         const origin = window.location.origin;
