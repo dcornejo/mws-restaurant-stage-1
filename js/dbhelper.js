@@ -245,10 +245,10 @@ class DBHelper {
         return marker;
     }
 
+    /**
+     * @brief update restaurant in database
+     */
     static updateRestaurant(x) {
-        /* given a restaurant structure, update IDB with it */
-        /* note that the ID we need is already in the structure */
-
         return this.dbp.then((db) => {
             const tx = db.transaction('restaurantStore', 'readwrite');
             const store = tx.objectStore('restaurantStore');
@@ -257,9 +257,10 @@ class DBHelper {
     }
 
     /* ============================================== */
-    /* STUFF FOR REVIEW UPDATE
 
-    /* put a message into the outbox for the remote server */
+    /**
+     *  @brief put a message into the outbox for the remote server
+     */
     static queueMessage(msg) {
         console.log("queueing ", msg);
 

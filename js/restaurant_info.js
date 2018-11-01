@@ -1,3 +1,4 @@
+
 let restaurant;
 var newMap;
 
@@ -111,11 +112,10 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
     cuisine.tabIndex = 0;
     cuisine.setAttribute('aria-label', restaurant.cuisine_type + " cuisine");
 
-    // fill operating hours
     if (restaurant.operating_hours) {
         fillRestaurantHoursHTML();
     }
-    // fill reviews
+
     fillReviewsHTML();
 };
 
@@ -145,7 +145,11 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
  * Create all reviews HTML and add them to the webpage.
  */
 fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+
+    /* TODO: this should be idempotent */
+
     const container = document.getElementById('reviews-container');
+
     const title = document.createElement('h2');
     title.innerHTML = 'Reviews';
     title.tabIndex = 0;
@@ -164,6 +168,33 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     });
     container.appendChild(ul);
 };
+
+/* ======================================================== */
+
+fillReviewsListHTML = (reviews = self.restaurant.reviews) => {
+
+    const list = document.getElementById('reviews-list');
+
+    /* remove all the old reviews */
+    while (list.hasChildNodes()) {
+        list.removeChild(list.lastChild);
+    }
+
+    if (!reviews) {
+        const noReviews = document.createElement('p');
+        noReviews.innerHTML = 'No reviews yet!';
+        list.appendChild(noReviews);
+        return;
+    }
+
+    reviews.forEach(review => {
+        list.appendChild(createReviewHTML(review));
+    });
+
+    console.log('ttt ', list);
+};
+
+/* ======================================================== */
 
 /**
  * Create review HTML and add it to the webpage.
@@ -239,13 +270,9 @@ getParameterByName = (name, url) => {
 
 /**
  * handle clicking on the favorite icon
- *
- * @param id
  */
 
 favoriteClick = (id) => {
-
-    /* TODO: find a decent way to display favorite icon */
 
     /* find the element that was clicked on */
     const elt = document.getElementById('favorite-' + id);
@@ -282,8 +309,6 @@ favoriteClick = (id) => {
 
 /**
  * @brief handler for review submission button
- *
- * @returns {boolean}
  */
 
 reviewSubmit = () => {
@@ -296,17 +321,22 @@ reviewSubmit = () => {
         comments: reviewForm['reviewer-comment'].value
     };
 
+    /*
+     * i don't want to hard code the server/ports being used. in
+     * page code I can always reference the window, but the SW can't,
+     * so I pass this along with the message to be sent.
+     */
     const message = {
-        /* pass part of the URL to sw */
         urlRoot: DBHelper.DATABASE_URL_ROOT,
-        /* and the actual review */
         review: review
     };
 
-    console.log('curr state', this.restaurant);
-
     /* queue outbound update */
     DBHelper.queueMessage(message);
+
+    document.getElementById('reviewer-name').value = "";
+    document.getElementById('reviewer-rating').value = "3";
+    document.getElementById('reviewer-comment').value = "";
 
     /* TODO: notify user that we're working on it */
 
@@ -320,7 +350,11 @@ channel.onmessage = (ev) => {
         console.log('update for me');
         this.restaurant.reviews.push(ev.data);
 
-        /* TODO: don't use a sledgehammer */
-        fillRestaurantHTML();
+        /*
+         * I decided not to update the reviews on the page until after
+         * the server has been updated, if we're offline the dates of the
+         * reviews could be different after a refresh.
+         */
+        fillReviewsListHTML();
     }
 };
