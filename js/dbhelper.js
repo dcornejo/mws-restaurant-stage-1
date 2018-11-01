@@ -1,5 +1,6 @@
 
-function openDatabase() {
+
+function openRRDatabase() {
     if (!navigator.serviceWorker) {
         return Promise.resolve();
     }
@@ -10,9 +11,10 @@ function openDatabase() {
                 let store = upgradeDb.createObjectStore('restaurantStore', {
                     keyPath: 'id'
                 });
-                // store.createIndex('by-id', 'id');
-                // store.createIndex('by-cuisine', 'cuisine_type');ww
-                // store.createIndex('by-neighborhood', 'neighborhood');
+                let messageStore = upgradeDb.createObjectStore('outbox', {
+                    autoIncrement: true,
+                    keyPath: 'id'
+                });
         }
     })
 }
@@ -31,7 +33,6 @@ class DBHelper {
     }
 
     static get DATABASE_URL() {
-        /* really not sure i like this method, but it works... */
         const origin = window.location.origin;
         let dataUrl = origin.replace(/:[0-9]+$/, '') + ':1337/restaurants';
         return dataUrl;
@@ -45,7 +46,7 @@ class DBHelper {
             console.log("damn");
         }
 
-        this.dbp = openDatabase();
+        this.dbp = openRRDatabase();
 
         return this.dbp.then((db) => {
             return fetch(DBHelper.DATABASE_URL).then(response => {
@@ -249,8 +250,6 @@ class DBHelper {
         return marker;
     }
 
-    /* ============================================== */
-
     static updateRestaurant(x) {
         /* given a restaurant structure, update IDB with it */
         /* note that the ID we need is already in the structure */
@@ -261,5 +260,56 @@ class DBHelper {
             return store.put(x);
         });
     }
+
+    /* ============================================== */
+    /* STUFF FOR REVIEW UPDATE
+
+    /* put a message into the outbox for the remote server */
+    static queueMessage(msg) {
+        console.log("queueing ", msg);
+
+        return this.dbp.then((db) => {
+
+            let transaction = db.transaction('outbox', 'readwrite');
+            return transaction.objectStore('outbox').put(msg);
+
+        }).then(function () {
+
+            /* here we request a background sync */
+            navigator.serviceWorker.ready.then(registration => {
+                console.log('sync register');
+                return registration.sync.register('flush');
+            });
+
+        });
+    }
+
+    /* get queued message for remote server */
+    static getMessages() {
+        if (!this.dbp) {
+            console.log("db shit");
+            return;
+        }
+
+        return this.dbp.then((db) => {
+
+            let transaction = db.transaction('outbox', 'readwrite');
+            return transaction.objectStore('outbox').getAll()
+                .then(data => {
+                    console.log("gm", data);
+                });
+
+        }).then(function () {
+
+            /* here we request a background sync */
+            return navigator.serviceWorker.ready.then(registration => {
+                console.log('sync register');
+                return registration.sync.register('flush');
+            });
+
+        });
+
+    }
+
 }
 

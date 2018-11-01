@@ -1,6 +1,7 @@
 let restaurant;
-//let map;
 var newMap;
+
+const channel = new BroadcastChannel('updates');
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js')
@@ -73,10 +74,10 @@ fetchRestaurantFromURL = (callback) => {
             let reviewsUrl = DBHelper.DATABASE_URL_ROOT + 'reviews/?restaurant_id=' + id;
 
             fetch(reviewsUrl).then(response => {
-                // console.log(response);
                 return response.json();
             }).then(reviews => {
                 restaurant.reviews = reviews;
+                // console.log(reviews);
                 fillRestaurantHTML();
                 callback(null, restaurant)
             });
@@ -297,29 +298,28 @@ favoriteClick = (id) => {
 };
 
 reviewSubmit = () => {
-    let xxx = document.getElementById('review-form').elements;
+    let reviewForm = document.getElementById('review-form').elements;
 
     const review = {
+        // idxx: this.restaurant.id,
         restaurant_id: this.restaurant.id,
-        name: xxx['reviewer-name'].value,
-        rating: xxx['reviewer-rating'].value,
-        comments: xxx['reviewer-comment'].value
+        name: reviewForm['reviewer-name'].value,
+        rating: reviewForm['reviewer-rating'].value,
+        comments: reviewForm['reviewer-comment'].value
     };
+    const message = {
+        urlRoot: DBHelper.DATABASE_URL_ROOT,
+        review: review
+    }
 
-    console.log("review ", review);
-    let dataUrl = origin.replace(/:[0-9]+$/, '') + ':1337/reviews/';
-    console.log("url ", dataUrl);
-
-    /* send the review to the server */
-    fetch(dataUrl, {
-        method: "POST",
-        cache: "no-cache",
-        headers: {
-            "Content-Type": "application/json; charset=utf-8"
-        },
-        body: JSON.stringify(review)
-    }).then(response => response.json())
-        .then(d => console.log(d));
+    /* queue outbound update */
+    DBHelper.queueMessage(message);
 
     return false;
 };
+
+channel.onmessage = function (ev) {
+    /* sync happened */
+    console.log('messsage ', ev);
+};
+

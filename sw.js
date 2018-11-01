@@ -1,8 +1,4 @@
-/*
- * things to do if we had a dynamic backend:
- *  1) clean up old cache entries
- *  2) save restaurant entries in indexedDB
- */
+importScripts('js/idb.js', 'js/datastore.js');
 
 /*
  * the static cache needs to be cleaned only when we reissue the
@@ -22,6 +18,7 @@ const STATIC_ASSETS = [
     '/js/restaurant_info.js',
     '/css/styles.css',
     'https://fonts.googleapis.com/css?family=Arvo',
+    'https://fonts.gstatic.com/s/arvo/v10/tDbD2oWUg0MKqScQ7Z7o_vo.woff2'
 ];
 
 /**
@@ -33,12 +30,12 @@ const STATIC_ASSETS = [
 self.addEventListener('install', function (event) {
 
     /* reload the static caches */
-    event.waitUntil (
+    event.waitUntil(
         caches.open(STATIC_CACHE_NAME)
-            .then (function (cache) {
+            .then(function (cache) {
                 return cache.addAll(STATIC_ASSETS);
             })
-            .catch (function (error) {
+            .catch(function (error) {
                 console.log(error);
             })
     )
@@ -56,10 +53,9 @@ self.addEventListener('activate', function (event) {
      */
     event.waitUntil(
         caches.keys()
-            .then (function (keylist) {
-                return Promise.all(keylist.map (function (key) {
+            .then(function (keylist) {
+                return Promise.all(keylist.map(function (key) {
                     if (key !== STATIC_CACHE_NAME && key !== DYNAMIC_CACHE_NAME) {
-                        // console.log("deleting caches");
                         return (caches.delete(key));
                     }
                 }))
@@ -76,8 +72,8 @@ self.addEventListener('activate', function (event) {
 self.addEventListener('fetch', function (event) {
 
     event.respondWith(
-        caches.match(event.request, { ignoreSearch: true })
-            .then(function(response) {
+        caches.match(event.request, {ignoreSearch: true})
+            .then(function (response) {
                 if (response) {
                     /* response was cached already, return it */
                     //console.log("served from cache :" + event.request.url);
@@ -86,13 +82,13 @@ self.addEventListener('fetch', function (event) {
                 else {
                     /* we need to go to the network to fetch response */
                     return fetch(event.request)
-                        .then (function (response) {
+                        .then(function (response) {
                             /* TODO: make this test more generic, at least for review content */
                             if ((!event.request.url.match(/^https:\/\/api.tiles.mapbox.com\//)) &&
                                 (!event.request.url.match(/^https:\/\/testweb.dogwood.com:1337\//))) {
                                 /* don't cache maps or reviews content */
                                 return caches.open(DYNAMIC_CACHE_NAME)
-                                    .then(function(cache) {
+                                    .then(function (cache) {
                                         cache.put(event.request.url, response.clone());
                                         /* lastly, pass the response back */
                                         return response;
@@ -110,3 +106,44 @@ self.addEventListener('fetch', function (event) {
     );
 });
 
+/* ----------------------------------------------------- */
+
+self.addEventListener('sync', function (event) {
+
+    event.waitUntil(
+        store.outbox('readonly').then(function (outbox) {
+            return outbox.getAll();
+        })
+            .then(function (messages) {
+                return Promise.all(messages.map(function (message) {
+
+                    const postUrl = message.urlRoot + 'reviews/';
+                    console.log('url', postUrl);
+                    console.log('qd ', message);
+
+                    return fetch(postUrl, {
+                        method: 'POST',
+                        cache: "no-cache",
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(message.review)
+                    })
+                        .then(function (response) {
+                            // console.log('resp', response);
+                            return response.json();
+                        })
+                        .then(function (data) {
+                            console.log('x ', data);
+                            return store.outbox('readwrite')
+                                .then(function (outbox) {
+                                    console.log('purged ', message.id);
+                                    return outbox.delete(message.id);
+                                });
+                        })
+                }))
+            }).catch(function (err) {
+            console.error(err);
+        })
+    );
+});
