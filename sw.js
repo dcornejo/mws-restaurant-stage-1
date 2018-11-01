@@ -108,6 +108,8 @@ self.addEventListener('fetch', function (event) {
 
 /* ----------------------------------------------------- */
 
+const channel = new BroadcastChannel('updates');
+
 self.addEventListener('sync', function (event) {
 
     event.waitUntil(
@@ -130,10 +132,14 @@ self.addEventListener('sync', function (event) {
                         .then((response) => {
                             return response.json();
                         })
-                        .then(() => {
+                        .then((rrr) => {
+                            console.log('resp ', rrr);
+                            /* TODO: pass back received reply from remote DB to page so it can update */
+                            channel.postMessage(rrr);
+
                             return store.outbox('readwrite')
                                 .then((outbox) => {
-                                    console.log('sent, purged ', message.id);
+                                    console.log('sent and purged id #' + message.id);
                                     return outbox.delete(message.id);
                                 });
                         })
@@ -143,4 +149,6 @@ self.addEventListener('sync', function (event) {
                 console.error(err);
             })
     );
+
+    /* TODO: pass back received reply from remote DB to page so it can update */
 });

@@ -48,11 +48,6 @@ initMap = () => {
  * Get current restaurant from page URL.
  */
 fetchRestaurantFromURL = (callback) => {
-    // if (self.restaurant) {
-    //     // restaurant already fetched!
-    //     callback(null, self.restaurant);
-    //     return;
-    // }
     const id = getParameterByName('id');
     if (!id) {
         // no id found in URL
@@ -67,20 +62,15 @@ fetchRestaurantFromURL = (callback) => {
                 return;
             }
 
-            /* ====================================== */
-
             let reviewsUrl = DBHelper.DATABASE_URL_ROOT + 'reviews/?restaurant_id=' + id;
 
             fetch(reviewsUrl).then(response => {
                 return response.json();
             }).then(reviews => {
                 restaurant.reviews = reviews;
-                // console.log(reviews);
                 fillRestaurantHTML();
                 callback(null, restaurant)
             });
-
-            /* ====================================== */
         });
     }
 };
@@ -260,11 +250,6 @@ favoriteClick = (id) => {
     /* find the element that was clicked on */
     const elt = document.getElementById('favorite-' + id);
 
-    console.log("click", self.restaurant);
-
-    /* get the index of the restaurant */
-    // let re = id - 1;
-
     /* what is the current state? */
     let current = self.restaurant.is_favorite;
 
@@ -295,6 +280,12 @@ favoriteClick = (id) => {
     return DBHelper.updateRestaurant(self.restaurant);
 };
 
+/**
+ * @brief handler for review submission button
+ *
+ * @returns {boolean}
+ */
+
 reviewSubmit = () => {
     let reviewForm = document.getElementById('review-form').elements;
 
@@ -317,5 +308,19 @@ reviewSubmit = () => {
     /* queue outbound update */
     DBHelper.queueMessage(message);
 
+    /* TODO: notify user that we're working on it */
+
     return false;
+};
+
+const channel = new BroadcastChannel('updates');
+
+channel.onmessage = (ev) => {
+    if (parseInt(this.restaurant.id) === parseInt(ev.data.restaurant_id)) {
+        console.log('update for me');
+        this.restaurant.reviews.push(ev.data);
+
+        /* TODO: don't use a sledgehammer */
+        fillRestaurantHTML();
+    }
 };

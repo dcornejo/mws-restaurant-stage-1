@@ -8,10 +8,10 @@ function openRRDatabase() {
     return idb.open('restaurantsDb', 1, function (upgradeDb) {
         switch(upgradeDb.oldVersion) {
             case 0:
-                let store = upgradeDb.createObjectStore('restaurantStore', {
+                upgradeDb.createObjectStore('restaurantStore', {
                     keyPath: 'id'
                 });
-                let messageStore = upgradeDb.createObjectStore('outbox', {
+                upgradeDb.createObjectStore('outbox', {
                     autoIncrement: true,
                     keyPath: 'id'
                 });
@@ -28,14 +28,12 @@ class DBHelper {
      */
     static get DATABASE_URL_ROOT() {
         const origin = window.location.origin;
-        let dataUrl = origin.replace(/:[0-9]+$/, '') + ':1337/';
-        return dataUrl;
+        return origin.replace(/:[0-9]+$/, '') + ':1337/';
     }
 
     static get DATABASE_URL() {
         const origin = window.location.origin;
-        let dataUrl = origin.replace(/:[0-9]+$/, '') + ':1337/restaurants';
-        return dataUrl;
+        return origin.replace(/:[0-9]+$/, '') + ':1337/restaurants';
     }
 
     /**
@@ -70,9 +68,8 @@ class DBHelper {
     /* ================================================================== */
 
     /**
-     * get an array of all the restaurants
+     * @brief get an array of all the restaurants
      *
-     * @returns {PromiseLike<T | never>}
      */
     static getRestaurants() {
         return this.dbp.then(db => {
@@ -85,10 +82,8 @@ class DBHelper {
     }
 
     /**
-     * get a specific restaurant by its ID
+     * @brief get a specific restaurant by its ID
      *
-     * @param id
-     * @returns {PromiseLike<T | never>}
      */
     static getRestaurant(id) {
         if (!this.dbp) {
@@ -283,33 +278,5 @@ class DBHelper {
 
         });
     }
-
-    /* get queued message for remote server */
-    static getMessages() {
-        if (!this.dbp) {
-            console.log("db shit");
-            return;
-        }
-
-        return this.dbp.then((db) => {
-
-            let transaction = db.transaction('outbox', 'readwrite');
-            return transaction.objectStore('outbox').getAll()
-                .then(data => {
-                    console.log("gm", data);
-                });
-
-        }).then(function () {
-
-            /* here we request a background sync */
-            return navigator.serviceWorker.ready.then(registration => {
-                console.log('sync register');
-                return registration.sync.register('flush');
-            });
-
-        });
-
-    }
-
 }
 
