@@ -1,4 +1,5 @@
 
+/* TODO: integrate with dhelper */
 
 const store = {
 
@@ -9,7 +10,10 @@ const store = {
             return Promise.resolve(store.db);
         }
         return idb.open('restaurantsDb', 1, function (upgradeDb) {
-            upgradeDb.createObjectStore('outbox', {autoIncrement: true, keyPath: 'id'});
+            upgradeDb.createObjectStore('outbox', {
+                autoIncrement: true,
+                keyPath: 'id'
+            });
         })
             .then(function (db) {
                 return store.db = db;

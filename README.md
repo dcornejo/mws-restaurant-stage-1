@@ -26,3 +26,8 @@ the maps.
 ## IndexedDB
 
 This repository uses [idb](https://github.com/jakearchibald/idb) as a wrapper for IndexedDB.
+
+## Twilio
+
+background sync code inlfuenced by article by Phil Nash on twilio blog:
+["Send messages when you’re back online with Service Workers and Background Sync"](https://www.twilio.com/blog/2017/02/send-messages-when-youre-back-online-with-service-workers-and-background-sync.html)

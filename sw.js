@@ -111,15 +111,13 @@ self.addEventListener('fetch', function (event) {
 self.addEventListener('sync', function (event) {
 
     event.waitUntil(
-        store.outbox('readonly').then(function (outbox) {
+        store.outbox('readonly').then((outbox) => {
             return outbox.getAll();
         })
-            .then(function (messages) {
+            .then((messages) => {
                 return Promise.all(messages.map(function (message) {
 
                     const postUrl = message.urlRoot + 'reviews/';
-                    console.log('url', postUrl);
-                    console.log('qd ', message);
 
                     return fetch(postUrl, {
                         method: 'POST',
@@ -129,21 +127,20 @@ self.addEventListener('sync', function (event) {
                         },
                         body: JSON.stringify(message.review)
                     })
-                        .then(function (response) {
-                            // console.log('resp', response);
+                        .then((response) => {
                             return response.json();
                         })
-                        .then(function (data) {
-                            console.log('x ', data);
+                        .then(() => {
                             return store.outbox('readwrite')
-                                .then(function (outbox) {
-                                    console.log('purged ', message.id);
+                                .then((outbox) => {
+                                    console.log('sent, purged ', message.id);
                                     return outbox.delete(message.id);
                                 });
                         })
                 }))
-            }).catch(function (err) {
-            console.error(err);
-        })
+            })
+            .catch((err) => {
+                console.error(err);
+            })
     );
 });

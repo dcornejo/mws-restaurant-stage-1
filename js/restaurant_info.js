@@ -1,8 +1,6 @@
 let restaurant;
 var newMap;
 
-const channel = new BroadcastChannel('updates');
-
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js')
         .then(function () {
@@ -13,7 +11,7 @@ if ('serviceWorker' in navigator) {
 /**
  * Initialize map as soon as the page is loaded.
  */
-document.addEventListener('DOMContentLoaded', (event) => {
+document.addEventListener('DOMContentLoaded', () => {
     DBHelper.loadDatabase().then(() => {
         initMap();
     });
@@ -265,7 +263,7 @@ favoriteClick = (id) => {
     console.log("click", self.restaurant);
 
     /* get the index of the restaurant */
-    let re = id - 1;
+    // let re = id - 1;
 
     /* what is the current state? */
     let current = self.restaurant.is_favorite;
@@ -301,25 +299,23 @@ reviewSubmit = () => {
     let reviewForm = document.getElementById('review-form').elements;
 
     const review = {
-        // idxx: this.restaurant.id,
         restaurant_id: this.restaurant.id,
         name: reviewForm['reviewer-name'].value,
         rating: reviewForm['reviewer-rating'].value,
         comments: reviewForm['reviewer-comment'].value
     };
+
     const message = {
+        /* pass part of the URL to sw */
         urlRoot: DBHelper.DATABASE_URL_ROOT,
+        /* and the actual review */
         review: review
-    }
+    };
+
+    console.log('curr state', this.restaurant);
 
     /* queue outbound update */
     DBHelper.queueMessage(message);
 
     return false;
 };
-
-channel.onmessage = function (ev) {
-    /* sync happened */
-    console.log('messsage ', ev);
-};
-
